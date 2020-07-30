@@ -1,6 +1,6 @@
 import Foundation
 
-enum AuraEffectMode: Int, CaseIterable {
+enum AuraEffect: Int, CaseIterable {
     case off = 0
     case `static` = 1
     case breathing = 2
@@ -73,4 +73,3 @@ let AuraProductIDs = [
 ]
 
 let AuraCommand: UInt8 = 0xec
- 

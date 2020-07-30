@@ -74,16 +74,17 @@ class AuraUSBController {
             // FIXME: this shouldn't need to know directly about EffectCommand
             // TODO: add `DirectCommand` support
             if let effectCommand = command as? EffectCommand {
+                let rgbs = [CommandColor](repeating: effectCommand.color, count: Int(auraUSBDevice.numberOfLEDs))
+
                 try setEffect(command: effectCommand, effectChannel: auraUSBDevice.effectChannel)
                 try setColors(
-                    effectCommand.rgbs,
+                    rgbs,
                     startLED: startLED,
                     channel: UInt8(index),
-                    numberOfLEDs: auraUSBDevice.numberOfLEDs,
                     isFixed: auraUSBDevice.type == .fixed
                 )
 
-                startLED += auraUSBDevice.numberOfLEDs
+                startLED += UInt8(auraUSBDevice.numberOfLEDs)
             }
         }
 
@@ -116,7 +117,7 @@ class AuraUSBController {
         ])
     }
     
-    func setColors(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, numberOfLEDs: UInt8, isFixed: Bool) throws {
+    func setColors(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, isFixed: Bool) throws {
         if rgbs.count == 0 {
             return
         }

@@ -5,7 +5,7 @@ class ViewController: NSViewController {
     @IBOutlet private var effectsPopUpButton: NSPopUpButton!
     @IBOutlet private var colorWell: NSColorWell!
 
-    private var currentMode = AuraEffectMode.static
+    private var currentMode = AuraEffect.static
     private var currentColor = NSColor.bestPink
 
     private var connectionState: ConnectionState {
@@ -35,12 +35,12 @@ class ViewController: NSViewController {
         connectedStatusLabel.stringValue = "Unknown"
 
         effectsPopUpButton.removeAllItems()
-        for mode in AuraEffectMode.allCases {
-            effectsPopUpButton.addItem(withTitle: mode.name)
+        for mode in AuraEffect.allCases {
+            effectsPopUpButton.addItem(withTitle: "Built-in: \(mode.name)")
         }
 
         // set defaults
-        effectsPopUpButton.selectItem(at: AuraEffectMode.allCases.firstIndex(of: currentMode) ?? 0)
+        effectsPopUpButton.selectItem(at: AuraEffect.allCases.firstIndex(of: currentMode) ?? 0)
         colorWell.color = currentColor
         updateConnectionState()
     }
@@ -56,12 +56,12 @@ class ViewController: NSViewController {
 
         guard
             idx >= 0,
-            idx < AuraEffectMode.allCases.count
+            idx < AuraEffect.allCases.count
             else {
                 return
         }
 
-        currentMode = AuraEffectMode.allCases[idx]
+        currentMode = AuraEffect.allCases[idx]
 
         colorWell.isHidden = !currentMode.colorable
 
@@ -73,7 +73,7 @@ class ViewController: NSViewController {
 
         let command = EffectCommand(
             currentMode,
-            rgbs: currentMode.colorable ? [commandColor] : []
+            color: currentMode.colorable ? commandColor : .black
         )
 
         send(command)

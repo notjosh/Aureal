@@ -36,18 +36,26 @@ struct CommandColor {
 }
 
 protocol Command {
-    var rgbs: [CommandColor] { get }
 }
 
 struct EffectCommand: Command {
-    let effect: AuraEffectMode
+    let effect: AuraEffect
+    let color: CommandColor
+
+    let controlMode = AuraControlMode.effect
+
+    init(_ effect: AuraEffect, color: CommandColor) {
+        self.effect = effect
+        self.color = color
+    }
+}
+
+struct DirectCommand: Command {
     let rgbs: [CommandColor]
 
-    let controlMode: AuraControlMode
+    let controlMode = AuraControlMode.effect
 
-    init(_ effect: AuraEffectMode, rgbs: [CommandColor]) {
-        self.effect = effect
+    init(rgbs: [CommandColor]) {
         self.rgbs = rgbs
-        self.controlMode = .effect // only using effects for now
     }
 }
