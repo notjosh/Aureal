@@ -69,6 +69,10 @@ let AsusUSBVendorID = 0x0b05
 
 let AuraProductIDs = [
     0x18f3,
+    0x1872,
+    0x1872,
+    0x1867,
+    0x1889,
     // potentially: 0x1939,
 ]
 
