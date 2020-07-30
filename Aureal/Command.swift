@@ -53,7 +53,7 @@ struct EffectCommand: Command {
 struct DirectCommand: Command {
     let rgbs: [CommandColor]
 
-    let controlMode = AuraControlMode.effect
+    let controlMode = AuraControlMode.direct
 
     init(rgbs: [CommandColor]) {
         self.rgbs = rgbs

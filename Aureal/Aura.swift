@@ -17,7 +17,7 @@ enum AuraEffect: Int, CaseIterable {
     case starryNight = 13
     case music = 14
 
-    var colorable: Bool {
+    var isColorable: Bool {
         switch self {
         case .off: return false
         case .static: return true

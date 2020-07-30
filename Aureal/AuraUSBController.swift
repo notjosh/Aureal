@@ -68,27 +68,56 @@ class AuraUSBController {
     }
     
     func send(command: Command) throws {
-        var startLED: UInt8 = 0
+        // FIXME: this shouldn't need to know directly about EffectCommand
 
-        for (index, auraUSBDevice) in auraUSBDevices.enumerated() {
-            // FIXME: this shouldn't need to know directly about EffectCommand
-            // TODO: add `DirectCommand` support
-            if let effectCommand = command as? EffectCommand {
+        if let effectCommand = command as? EffectCommand {
+            var startLED: UInt8 = 0
+            for auraUSBDevice in auraUSBDevices {
                 let rgbs = [CommandColor](repeating: effectCommand.color, count: Int(auraUSBDevice.numberOfLEDs))
 
                 try setEffect(command: effectCommand, effectChannel: auraUSBDevice.effectChannel)
                 try setColors(
                     rgbs,
                     startLED: startLED,
-                    channel: UInt8(index),
+                    channel: auraUSBDevice.effectChannel,
                     isFixed: auraUSBDevice.type == .fixed
                 )
 
                 startLED += UInt8(auraUSBDevice.numberOfLEDs)
+
             }
+
+            try commit()
         }
 
-        try commit()
+        if let directCommand = command as? DirectCommand {
+            let ledCountPerCommand = 20
+
+            for auraUSBDevice in auraUSBDevices {
+                var startLED: UInt8 = 0
+
+                if auraUSBDevice.type == .addressable {
+                    // TODO: how do we get the LED count for these pals?
+                    // TODO: do we know the correct channels?
+                    continue
+                }
+
+                // TODO: RGBs should be fixed, and sent as a list
+                let rgbs = [CommandColor](repeating: directCommand.rgbs.first!, count: Int(auraUSBDevice.numberOfLEDs))
+
+                let groups = rgbs.chunked(into: ledCountPerCommand)
+                for (index, group) in groups.enumerated() {
+                    try setDirect(
+                        group,
+                        startLED: startLED,
+                        channel: auraUSBDevice.directChannel,
+                        apply: index >= groups.count - 1
+                    )
+
+                    startLED += UInt8(group.count)
+                }
+            }
+        }
     }
 
     func getFirmwareVersion() throws {
@@ -104,6 +133,19 @@ class AuraUSBController {
             AuraCommand,
             0xb0,
         ])
+    }
+
+    func setDirect(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, apply: Bool) throws {
+        try send(
+            commandBytes: [
+                AuraCommand,
+                0x40,
+                (apply ? 0x80 : 0x00) | channel,
+                startLED,
+                UInt8(rgbs.count)
+            ]
+            + rgbs.flatMap { [$0.r, $0.g, $0.b] }
+        )
     }
     
     func setEffect(command: EffectCommand, effectChannel: UInt8) throws {
@@ -183,6 +225,35 @@ class AuraUSBController {
     private func handleConfigurationTable(_ data: Data) {
         print("config: \(data)")
 
+        for i in stride(from: 0, to: data.count, by: 6) {
+            print(
+                String(
+                    format: "%02X: %02X %02X %02X %02X %02X %02X ",
+                    arguments: [
+                        i,
+                        data[i + 0],
+                        data[i + 1],
+                        data[i + 2],
+                        data[i + 3],
+                        data[i + 4],
+                        data[i + 5],
+                    ]
+                )
+            )
+        }
+
+        // config: 60 bytes
+//        00: 1E 9F 02 01 00 00 <- 2 addressable devices
+//        06: 78 3C 00 01 00 00 <- addressable device 1: 0x78 (100) LEDs
+//        0C: 78 3C 00 00 00 00 <- addressable device 2: 0x78 (100) LEDs
+//        12: 00 00 00 00 00 00
+//        18: 00 00 00 08 0A 02 <- mainboard: 8 mainboard LEDs
+//        1E: 01 F4 00 00 00 00
+//        24: 00 00 00 00 00 00
+//        2A: 00 00 00 00 00 00
+//        30: 00 00 00 00 00 00
+//        36: 00 00 00 00 00 00
+
         let addressableChannelCount = data[0x02]
         let mainboardLEDCount = data[0x1b]
 
@@ -209,8 +280,8 @@ class AuraUSBController {
                 .init(
                     effectChannel: 0x1,
                     directChannel: index,
-                    numberOfLEDs: 0x1,
-                    type: .addressable
+                    numberOfLEDs: 0x78, // TODO: <- hardcoded for now
+                    type: .fixed
                 )
             }
         )

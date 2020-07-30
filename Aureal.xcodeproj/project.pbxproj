@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		426A744024D2ECD500749F38 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426A743F24D2ECD500749F38 /* Array+Extensions.swift */; };
 		429A06FA24D195B30040C3BB /* AuraUSBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A06F924D195B30040C3BB /* AuraUSBDevice.swift */; };
 		42F4D42224D0D3330031C650 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D42124D0D3330031C650 /* AppDelegate.swift */; };
 		42F4D42424D0D3330031C650 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D42324D0D3330031C650 /* ViewController.swift */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		426A743F24D2ECD500749F38 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		429A06F924D195B30040C3BB /* AuraUSBDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraUSBDevice.swift; sourceTree = "<group>"; };
 		42F4D41E24D0D3330031C650 /* Aureal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aureal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42F4D42124D0D3330031C650 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				429A06F924D195B30040C3BB /* AuraUSBDevice.swift */,
 				42F4D43E24D0DD430031C650 /* Command.swift */,
 				42F4D44024D0DE1D0031C650 /* Aura.swift */,
+				426A743F24D2ECD500749F38 /* Array+Extensions.swift */,
 				42F4D42524D0D3340031C650 /* Assets.xcassets */,
 				42F4D42724D0D3340031C650 /* Main.storyboard */,
 				42F4D42A24D0D3340031C650 /* Info.plist */,
@@ -190,6 +193,7 @@
 				42F4D42424D0D3330031C650 /* ViewController.swift in Sources */,
 				429A06FA24D195B30040C3BB /* AuraUSBDevice.swift in Sources */,
 				42F4D43924D0D4760031C650 /* USBDevice.swift in Sources */,
+				426A744024D2ECD500749F38 /* Array+Extensions.swift in Sources */,
 				42F4D43D24D0DCD50031C650 /* AuraUSBController.swift in Sources */,
 				42F4D42224D0D3330031C650 /* AppDelegate.swift in Sources */,
 				42F4D43B24D0D4880031C650 /* USBDeviceMonitor.swift in Sources */,

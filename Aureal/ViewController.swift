@@ -1,12 +1,60 @@
 import Cocoa
 
+enum EffectType {
+    case builtInEffect
+    case direct
+}
+
+enum EffectColorMode {
+    case none
+    case single
+}
+
+protocol Effect {
+    var name: String { get }
+    var type: EffectType { get }
+    var colorMode: EffectColorMode { get }
+}
+
+struct BuiltInEffect: Effect {
+    let mode: AuraEffect
+
+    var name: String {
+        "Built-in: \(mode.name)"
+    }
+
+    var colorMode: EffectColorMode {
+        mode.isColorable ? .single : .none
+    }
+
+    var type: EffectType {
+        .builtInEffect
+    }
+}
+
+struct DirectEffect: Effect {
+    var name: String {
+        "Direct"
+    }
+
+    var colorMode: EffectColorMode {
+        .single
+    }
+
+    var type: EffectType {
+        .direct
+    }
+}
+
 class ViewController: NSViewController {
     @IBOutlet private var connectedStatusLabel: NSTextField!
     @IBOutlet private var effectsPopUpButton: NSPopUpButton!
     @IBOutlet private var colorWell: NSColorWell!
 
-    private var currentMode = AuraEffect.static
+    private var currentEffect: Effect!
     private var currentColor = NSColor.bestPink
+
+    private var effects = [Effect]()
 
     private var connectionState: ConnectionState {
         AppDelegate.shared.controller?.connectionState ?? .disconnected
@@ -21,6 +69,10 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // set up effects list
+        effects = [DirectEffect()] + AuraEffect.allCases.map { BuiltInEffect(mode: $0) }
+
+        // set up UI
         observation = NotificationCenter.default.addObserver(
             forName: .AuraUSBControllerConnectionStateUpdated,
             object: nil,
@@ -35,12 +87,13 @@ class ViewController: NSViewController {
         connectedStatusLabel.stringValue = "Unknown"
 
         effectsPopUpButton.removeAllItems()
-        for mode in AuraEffect.allCases {
-            effectsPopUpButton.addItem(withTitle: "Built-in: \(mode.name)")
+        for effect in effects {
+            effectsPopUpButton.addItem(withTitle: effect.name)
         }
 
         // set defaults
-        effectsPopUpButton.selectItem(at: AuraEffect.allCases.firstIndex(of: currentMode) ?? 0)
+        currentEffect = effects.first!
+        effectsPopUpButton.selectItem(at: 0)
         colorWell.color = currentColor
         updateConnectionState()
     }
@@ -56,25 +109,32 @@ class ViewController: NSViewController {
 
         guard
             idx >= 0,
-            idx < AuraEffect.allCases.count
+            idx < effects.count
             else {
                 return
         }
 
-        currentMode = AuraEffect.allCases[idx]
+        currentEffect = effects[idx]
 
-        colorWell.isHidden = !currentMode.colorable
+        colorWell.isHidden = currentEffect.colorMode == .none
 
         update()
     }
 
     private func update() {
         let commandColor = CommandColor(color: currentColor)
+        let command: Command
 
-        let command = EffectCommand(
-            currentMode,
-            color: currentMode.colorable ? commandColor : .black
-        )
+        switch currentEffect.type {
+        case .builtInEffect:
+            let effect = currentEffect as! BuiltInEffect
+            command = EffectCommand(
+                effect.mode,
+                color: effect.mode.isColorable ? commandColor : .black
+            )
+        case .direct:
+            command = DirectCommand(rgbs: [commandColor])
+        }
 
         send(command)
     }
