@@ -38,6 +38,10 @@ struct CommandColor {
 protocol Command {
 }
 
+protocol DirectCommand: Command {
+    func rgbs(capacity: Int, step: Int) -> [CommandColor]
+}
+
 struct EffectCommand: Command {
     let effect: AuraEffect
     let color: CommandColor
@@ -50,12 +54,69 @@ struct EffectCommand: Command {
     }
 }
 
-struct DirectCommand: Command {
-    let rgbs: [CommandColor]
+struct StaticDirectCommand: DirectCommand {
+    let color: CommandColor
 
-    let controlMode = AuraControlMode.direct
+    init(color: CommandColor) {
+        self.color = color
+    }
 
-    init(rgbs: [CommandColor]) {
-        self.rgbs = rgbs
+    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        return [color].repeated(capacity: capacity)
+    }
+}
+
+struct StaticSpacedDirectCommand: DirectCommand {
+    let color: CommandColor
+
+    init(color: CommandColor) {
+        self.color = color
+    }
+
+    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        let colors = [color, .black]
+            .stretched(by: 2)
+
+        return colors
+            .wrap(first: step % colors.count)
+            .repeated(capacity: capacity)
+    }
+}
+
+struct GradientDirectCommand: DirectCommand {
+    let fromColor: CommandColor
+    let toColor: CommandColor
+
+    init(fromColor: CommandColor, toColor: CommandColor = .red) {
+        self.fromColor = fromColor
+        self.toColor = toColor
+    }
+
+    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        (0..<capacity).map { idx in
+            let percentange = Double(idx) / Double(capacity)
+
+            let r = Int(fromColor.r) + Int(Double(Int(toColor.r) - Int(fromColor.r)) * percentange)
+            let g = Int(fromColor.g) + Int(Double(Int(toColor.g) - Int(fromColor.g)) * percentange)
+            let b = Int(fromColor.b) + Int(Double(Int(toColor.b) - Int(fromColor.b)) * percentange)
+
+            return CommandColor(
+                r: UInt8(r),
+                g: UInt8(g),
+                b: UInt8(b)
+            )
+        }
+    }
+}
+
+struct PlaygroundDirectCommand: DirectCommand {
+    let colors = [CommandColor.red, CommandColor.white, CommandColor.blue].stretched(by: 2)
+
+    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        let out = colors
+            .wrap(first: step % colors.count)
+            .repeated(capacity: capacity)
+
+        return Array(out)
     }
 }

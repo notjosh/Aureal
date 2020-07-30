@@ -66,14 +66,17 @@ class AuraUSBController {
 
         try getFirmwareVersion()
     }
-    
+
+    static var step: Int = 0
     func send(command: Command) throws {
         // FIXME: this shouldn't need to know directly about EffectCommand
 
         if let effectCommand = command as? EffectCommand {
             var startLED: UInt8 = 0
             for auraUSBDevice in auraUSBDevices {
-                let rgbs = [CommandColor](repeating: effectCommand.color, count: Int(auraUSBDevice.numberOfLEDs))
+                let rgbs = auraUSBDevice.type == .addressable
+                    ? [effectCommand.color]
+                    : [CommandColor](repeating: effectCommand.color, count: Int(8))
 
                 try setEffect(command: effectCommand, effectChannel: auraUSBDevice.effectChannel)
                 try setColors(
@@ -83,8 +86,7 @@ class AuraUSBController {
                     isFixed: auraUSBDevice.type == .fixed
                 )
 
-                startLED += UInt8(auraUSBDevice.numberOfLEDs)
-
+                startLED += UInt8(rgbs.count)
             }
 
             try commit()
@@ -96,14 +98,10 @@ class AuraUSBController {
             for auraUSBDevice in auraUSBDevices {
                 var startLED: UInt8 = 0
 
-                if auraUSBDevice.type == .addressable {
-                    // TODO: how do we get the LED count for these pals?
-                    // TODO: do we know the correct channels?
-                    continue
-                }
-
-                // TODO: RGBs should be fixed, and sent as a list
-                let rgbs = [CommandColor](repeating: directCommand.rgbs.first!, count: Int(auraUSBDevice.numberOfLEDs))
+                let rgbs = directCommand.rgbs(
+                    capacity: Int(auraUSBDevice.numberOfLEDs),
+                    step: type(of: self).step
+                )
 
                 let groups = rgbs.chunked(into: ledCountPerCommand)
                 for (index, group) in groups.enumerated() {
@@ -117,6 +115,8 @@ class AuraUSBController {
                     startLED += UInt8(group.count)
                 }
             }
+
+            type(of: self).step += 1
         }
     }
 
@@ -136,6 +136,7 @@ class AuraUSBController {
     }
 
     func setDirect(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, apply: Bool) throws {
+//        print(rgbs.count)
         try send(
             commandBytes: [
                 AuraCommand,
@@ -194,6 +195,8 @@ class AuraUSBController {
             repeating: 0,
             count: AuraCommandLength - commandBytes.count
         )
+
+//        print(bytes.count, bytes.hexa)
 
         let response = IOHIDDeviceSetReport(
             device.device,
@@ -278,10 +281,10 @@ class AuraUSBController {
         auraUSBDevices.append(contentsOf:
             (0..<count).map { index -> AuraUSBDevice in
                 .init(
-                    effectChannel: 0x1,
+                    effectChannel: index + 1,
                     directChannel: index,
                     numberOfLEDs: 0x78, // TODO: <- hardcoded for now
-                    type: .fixed
+                    type: .addressable
                 )
             }
         )

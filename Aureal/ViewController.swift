@@ -61,9 +61,12 @@ class ViewController: NSViewController {
     }
 
     private var observation: Any? = nil
+    private var timer: Timer?
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        timer?.invalidate()
+        timer = nil
     }
     
     override func viewDidLoad() {
@@ -96,6 +99,10 @@ class ViewController: NSViewController {
         effectsPopUpButton.selectItem(at: 0)
         colorWell.color = currentColor
         updateConnectionState()
+
+//        timer = Timer.scheduledTimer(withTimeInterval: 0.10, repeats: true) { [weak self] _ in
+//            self?.update()
+//        }
     }
 
     @IBAction func handleColor(sender: Any) {
@@ -133,7 +140,9 @@ class ViewController: NSViewController {
                 color: effect.mode.isColorable ? commandColor : .black
             )
         case .direct:
-            command = DirectCommand(rgbs: [commandColor])
+            command = StaticSpacedDirectCommand(color: commandColor)
+//            command = GradientDirectCommand(fromColor: commandColor)
+//            command = PlaygroundDirectCommand()
         }
 
         send(command)
