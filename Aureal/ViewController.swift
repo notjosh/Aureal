@@ -100,9 +100,9 @@ class ViewController: NSViewController {
         colorWell.color = currentColor
         updateConnectionState()
 
-//        timer = Timer.scheduledTimer(withTimeInterval: 0.10, repeats: true) { [weak self] _ in
-//            self?.update()
-//        }
+        timer = Timer.scheduledTimer(withTimeInterval: 0.10, repeats: true) { [weak self] _ in
+            self?.update()
+        }
     }
 
     @IBAction func handleColor(sender: Any) {

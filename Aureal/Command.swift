@@ -87,14 +87,16 @@ struct GradientDirectCommand: DirectCommand {
     let fromColor: CommandColor
     let toColor: CommandColor
 
-    init(fromColor: CommandColor, toColor: CommandColor = .red) {
+    init(fromColor: CommandColor, toColor: CommandColor = .blue) {
         self.fromColor = fromColor
         self.toColor = toColor
     }
 
     func rgbs(capacity: Int, step: Int) -> [CommandColor] {
         (0..<capacity).map { idx in
-            let percentange = Double(idx) / Double(capacity)
+            // seems my front case has "120" reported leds, but 10 on top of case, and 14 in front panel irl. hm.
+            let percentange = min(Double(idx) / Double(16), 1)
+//            let percentange = Double(idx % 4) / Double(4)
 
             let r = Int(fromColor.r) + Int(Double(Int(toColor.r) - Int(fromColor.r)) * percentange)
             let g = Int(fromColor.g) + Int(Double(Int(toColor.g) - Int(fromColor.g)) * percentange)
@@ -109,13 +111,29 @@ struct GradientDirectCommand: DirectCommand {
     }
 }
 
-struct PlaygroundDirectCommand: DirectCommand {
+struct PlaygroundDirectCommand2: DirectCommand {
     let colors = [CommandColor.red, CommandColor.white, CommandColor.blue].stretched(by: 2)
 
     func rgbs(capacity: Int, step: Int) -> [CommandColor] {
         let out = colors
             .wrap(first: step % colors.count)
             .repeated(capacity: capacity)
+
+        return Array(out)
+    }
+}
+
+struct PlaygroundDirectCommand: DirectCommand {
+    let colors = [CommandColor.red, CommandColor.white, CommandColor.blue].stretched(by: 2)
+
+    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        guard capacity != 8 else {
+            return [.white].repeated(capacity: capacity)
+        }
+
+        var out = [CommandColor.red].repeated(capacity: capacity)
+
+        out[step % out.count] = .white
 
         return Array(out)
     }

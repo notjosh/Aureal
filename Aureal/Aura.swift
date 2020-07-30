@@ -16,6 +16,7 @@ enum AuraEffect: Int, CaseIterable {
     case chaseRainbowPulse = 12
     case starryNight = 13
     case music = 14
+    case direct = 0xff
 
     var isColorable: Bool {
         switch self {
@@ -34,6 +35,7 @@ enum AuraEffect: Int, CaseIterable {
         case .chaseRainbowPulse: return false
         case .starryNight: return false
         case .music: return false
+        case .direct: return false
         }
     }
 
@@ -54,6 +56,7 @@ enum AuraEffect: Int, CaseIterable {
         case .chaseRainbowPulse: return "Chase Rainbow Pulse"
         case .starryNight: return "Starry Night"
         case .music: return "Music"
+        case .direct: return "(direct)"
         }
     }
 }

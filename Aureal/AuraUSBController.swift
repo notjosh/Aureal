@@ -68,17 +68,19 @@ class AuraUSBController {
     }
 
     static var step: Int = 0
+    var isDirect = false
     func send(command: Command) throws {
         // FIXME: this shouldn't need to know directly about EffectCommand
 
         if let effectCommand = command as? EffectCommand {
+            isDirect = false
             var startLED: UInt8 = 0
             for auraUSBDevice in auraUSBDevices {
                 let rgbs = auraUSBDevice.type == .addressable
                     ? [effectCommand.color]
                     : [CommandColor](repeating: effectCommand.color, count: Int(8))
 
-                try setEffect(command: effectCommand, effectChannel: auraUSBDevice.effectChannel)
+                try setEffect(effect: effectCommand.effect, effectChannel: auraUSBDevice.effectChannel)
                 try setColors(
                     rgbs,
                     startLED: startLED,
@@ -96,6 +98,13 @@ class AuraUSBController {
             let ledCountPerCommand = 20
 
             for auraUSBDevice in auraUSBDevices {
+                if !isDirect {
+                    try setEffect(
+                        effect: .direct,
+                        effectChannel: auraUSBDevice.effectChannel
+                    )
+                }
+
                 var startLED: UInt8 = 0
 
                 let rgbs = directCommand.rgbs(
@@ -115,6 +124,8 @@ class AuraUSBController {
                     startLED += UInt8(group.count)
                 }
             }
+
+            isDirect = true
 
             type(of: self).step += 1
         }
@@ -149,14 +160,14 @@ class AuraUSBController {
         )
     }
     
-    func setEffect(command: EffectCommand, effectChannel: UInt8) throws {
+    func setEffect(effect: AuraEffect, effectChannel: UInt8) throws {
         try send(commandBytes: [
             AuraCommand,
             0x35, // "effect control mode"
             effectChannel,
             0x0, // unknown
             0x0, // unknown
-            UInt8(command.effect.rawValue),
+            UInt8(effect.rawValue),
         ])
     }
     
@@ -247,8 +258,8 @@ class AuraUSBController {
 
         // config: 60 bytes
 //        00: 1E 9F 02 01 00 00 <- 2 addressable devices
-//        06: 78 3C 00 01 00 00 <- addressable device 1: 0x78 (100) LEDs
-//        0C: 78 3C 00 00 00 00 <- addressable device 2: 0x78 (100) LEDs
+//        06: 78 3C 00 01 00 00 <- addressable device 1: 0x78 (120) LEDs
+//        0C: 78 3C 00 00 00 00 <- addressable device 2: 0x78 (120) LEDs
 //        12: 00 00 00 00 00 00
 //        18: 00 00 00 08 0A 02 <- mainboard: 8 mainboard LEDs
 //        1E: 01 F4 00 00 00 00
