@@ -103,7 +103,7 @@ class ViewController: NSViewController {
 
 fileprivate extension NSColor {
     static var bestPink: NSColor {
-        self.init(calibratedRed: 204 / 255, green: 51 / 255, blue: 139 / 255, alpha: 1)
+        self.init(calibratedRed: 216 / 255, green: 4 / 255, blue: 155 / 255, alpha: 1)
     }
 }
 
