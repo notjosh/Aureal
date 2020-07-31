@@ -61,12 +61,16 @@ class ViewController: NSViewController {
     }
 
     private var observation: Any? = nil
+    private var activity: NSObjectProtocol?
     private var timer: Timer?
 
     deinit {
         NotificationCenter.default.removeObserver(self)
         timer?.invalidate()
         timer = nil
+        if let activity = activity {
+            ProcessInfo.processInfo.endActivity(activity)
+        }
     }
     
     override func viewDidLoad() {
@@ -100,9 +104,20 @@ class ViewController: NSViewController {
         colorWell.color = currentColor
         updateConnectionState()
 
-        timer = Timer.scheduledTimer(withTimeInterval: 0.10, repeats: true) { [weak self] _ in
+        let interval: TimeInterval = 0.1
+        let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
             self?.update()
         }
+        timer.tolerance = interval
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
+
+        activity = ProcessInfo
+            .processInfo
+            .beginActivity(
+                options: .userInitiated,
+                reason: "Animating RGBs"
+            )
     }
 
     @IBAction func handleColor(sender: Any) {
