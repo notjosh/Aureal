@@ -11,7 +11,9 @@
 		4277A04624D4379D005AB0DA /* USBWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4277A04524D4379D005AB0DA /* USBWatcher.swift */; };
 		4277A04824D43B1E005AB0DA /* AuraDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4277A04724D43B1E005AB0DA /* AuraDevice.swift */; };
 		427A570224D9985A00760111 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A570124D9985A00760111 /* DeviceManager.swift */; };
-		429A06FA24D195B30040C3BB /* AuraUSBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A06F924D195B30040C3BB /* AuraUSBDevice.swift */; };
+		427A570424D9CB9800760111 /* DeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A570324D9CB9800760111 /* DeviceViewController.swift */; };
+		427A570624D9D26F00760111 /* NSView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A570524D9D26F00760111 /* NSView+Extensions.swift */; };
+		427A570824D9D89100760111 /* EffectRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A570724D9D89100760111 /* EffectRunner.swift */; };
 		42F4D42224D0D3330031C650 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D42124D0D3330031C650 /* AppDelegate.swift */; };
 		42F4D42424D0D3330031C650 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D42324D0D3330031C650 /* ViewController.swift */; };
 		42F4D42624D0D3340031C650 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F4D42524D0D3340031C650 /* Assets.xcassets */; };
@@ -29,7 +31,9 @@
 		4277A04524D4379D005AB0DA /* USBWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBWatcher.swift; sourceTree = "<group>"; };
 		4277A04724D43B1E005AB0DA /* AuraDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraDevice.swift; sourceTree = "<group>"; };
 		427A570124D9985A00760111 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
-		429A06F924D195B30040C3BB /* AuraUSBDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraUSBDevice.swift; sourceTree = "<group>"; };
+		427A570324D9CB9800760111 /* DeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceViewController.swift; sourceTree = "<group>"; };
+		427A570524D9D26F00760111 /* NSView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Extensions.swift"; sourceTree = "<group>"; };
+		427A570724D9D89100760111 /* EffectRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectRunner.swift; sourceTree = "<group>"; };
 		42F4D41E24D0D3330031C650 /* Aureal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aureal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42F4D42124D0D3330031C650 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		42F4D42324D0D3330031C650 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -81,14 +85,16 @@
 				42F4D43624D0D44E0031C650 /* External */,
 				42F4D42124D0D3330031C650 /* AppDelegate.swift */,
 				42F4D42324D0D3330031C650 /* ViewController.swift */,
+				427A570324D9CB9800760111 /* DeviceViewController.swift */,
 				4277A04524D4379D005AB0DA /* USBWatcher.swift */,
 				42F4D43C24D0DCD50031C650 /* AuraUSBController.swift */,
-				429A06F924D195B30040C3BB /* AuraUSBDevice.swift */,
 				42F4D43E24D0DD430031C650 /* Command.swift */,
 				42F4D44024D0DE1D0031C650 /* Aura.swift */,
 				4277A04724D43B1E005AB0DA /* AuraDevice.swift */,
 				426A743F24D2ECD500749F38 /* Array+Extensions.swift */,
+				427A570524D9D26F00760111 /* NSView+Extensions.swift */,
 				427A570124D9985A00760111 /* DeviceManager.swift */,
+				427A570724D9D89100760111 /* EffectRunner.swift */,
 				42F4D42524D0D3340031C650 /* Assets.xcassets */,
 				42F4D42724D0D3340031C650 /* Main.storyboard */,
 				42F4D42A24D0D3340031C650 /* Info.plist */,
@@ -195,13 +201,15 @@
 			files = (
 				42F4D42424D0D3330031C650 /* ViewController.swift in Sources */,
 				427A570224D9985A00760111 /* DeviceManager.swift in Sources */,
-				429A06FA24D195B30040C3BB /* AuraUSBDevice.swift in Sources */,
 				426A744024D2ECD500749F38 /* Array+Extensions.swift in Sources */,
 				4277A04624D4379D005AB0DA /* USBWatcher.swift in Sources */,
+				427A570824D9D89100760111 /* EffectRunner.swift in Sources */,
 				42F4D43D24D0DCD50031C650 /* AuraUSBController.swift in Sources */,
 				42F4D42224D0D3330031C650 /* AppDelegate.swift in Sources */,
 				4277A04824D43B1E005AB0DA /* AuraDevice.swift in Sources */,
 				42F4D44524D178200031C650 /* HIDDevice.swift in Sources */,
+				427A570624D9D26F00760111 /* NSView+Extensions.swift in Sources */,
+				427A570424D9CB9800760111 /* DeviceViewController.swift in Sources */,
 				42F4D43F24D0DD430031C650 /* Command.swift in Sources */,
 				42F4D44324D178100031C650 /* HIDDeviceMonitor.swift in Sources */,
 				42F4D44124D0DE1D0031C650 /* Aura.swift in Sources */,

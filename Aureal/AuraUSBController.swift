@@ -35,75 +35,9 @@ class AuraUSBController {
         }
     }
 
-    func handshake(to device: HIDDevice) throws {
-        try getFirmwareVersion(from: device)
-    }
-
-//    static var step: Int = 0
-//    var isDirect = false
-//    func send(command: Command) throws {
-//        // FIXME: this shouldn't need to know directly about EffectCommand
-//
-//        if let effectCommand = command as? EffectCommand {
-//            isDirect = false
-//            var startLED: UInt8 = 0
-//            for auraUSBDevice in auraUSBDevices {
-//                let rgbs = auraUSBDevice.type == .addressable
-//                    ? [effectCommand.color]
-//                    : [CommandColor](repeating: effectCommand.color, count: Int(8))
-//
-//                try setEffect(effect: effectCommand.effect, effectChannel: auraUSBDevice.effectChannel)
-//                try setColors(
-//                    rgbs,
-//                    startLED: startLED,
-//                    channel: auraUSBDevice.effectChannel,
-//                    isFixed: auraUSBDevice.type == .fixed
-//                )
-//
-//                startLED += UInt8(rgbs.count)
-//            }
-//
-//            try commit()
-//        }
-//
-//        if let directCommand = command as? DirectCommand {
-//            let ledCountPerCommand = 20
-//
-//            for auraUSBDevice in auraUSBDevices {
-//                if !isDirect {
-//                    try setEffect(
-//                        effect: .direct,
-//                        effectChannel: auraUSBDevice.effectChannel
-//                    )
-//                }
-//
-//                var startLED: UInt8 = 0
-//
-//                let rgbs = directCommand.rgbs(
-//                    capacity: Int(auraUSBDevice.numberOfLEDs),
-//                    step: type(of: self).step
-//                )
-//
-//                let groups = rgbs.chunked(into: ledCountPerCommand)
-//                for (index, group) in groups.enumerated() {
-//                    try setDirect(
-//                        group,
-//                        startLED: startLED,
-//                        channel: auraUSBDevice.directChannel,
-//                        apply: index >= groups.count - 1
-//                    )
-//
-//                    startLED += UInt8(group.count)
-//                }
-//            }
-//
-//            isDirect = true
-//
-//            type(of: self).step += 1
-//        }
-//    }
-
     func getFirmwareVersion(from device: HIDDevice) throws {
+        print("get firmware")
+
         try send(commandBytes: [
             AuraCommand,
             0x82,
@@ -199,47 +133,4 @@ class AuraUSBController {
             throw AuraUSBControllerError.InvalidResponse(code: response)
         }
     }
-
-//    private func handleFirmwareVersion(_ data: Data) -> String? {
-//        return String(decoding: data, as: UTF8.self)
-//    }
-//
-//    private func handleConfigurationTable(_ data: Data) -> AuraUSBControllerConfiguration? {
-//
-//
-//        let addressableChannelCount = data[0x02]
-//        let mainboardLEDCount = data[0x1b]
-//
-//        print("addressableChannelCount: \(addressableChannelCount)")
-//        print("mainboardLEDCount: \(mainboardLEDCount)")
-//
-//        return .init(
-//            addressableChannels: (0..<addressableChannelCount).map { index -> AuraUSBControllerConfiguration.AddressableChannel in
-//                let offset = Int(6 * (index + 1))
-//                return .init(
-//                    numberOfLEDs: Int(data[offset + 0x0])
-//                )
-//            },
-//            mainboardLEDCount: Int(mainboardLEDCount)
-//        )
-//
-////        auraUSBDevices.removeAll()
-////
-////        // mainboard
-////        auraUSBDevices.append(
-////            .init(, numberOfLEDs: mainboardLEDCount, type: .fixed)
-////        )
-////
-////        // addressables
-////        auraUSBDevices.append(contentsOf:
-////            (0..<addressableChannelCount).map { index -> AuraUSBDevice in
-////                .init(
-////                    effectChannel: index + 1,
-////                    directChannel: index,
-////                    numberOfLEDs: 0x78, // TODO: <- hardcoded for now
-////                    type: .addressable
-////                )
-////            }
-////        )
-//    }
 }

@@ -6,7 +6,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.delegate as! AppDelegate
     }
 
-    let deviceManager = DeviceManager()
+    let deviceManager = DeviceManager.shared
+    var effectRunner: EffectRunner?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         deviceManager.start()

@@ -1,14 +1,21 @@
+import Combine
 import Foundation
 
 class DeviceManager {
-    static let shared = DeviceManager()
+    static var shared = {
+        DeviceManager()
+    }()
 
     private let watcher = USBWatcher()
     private let auraUSBController = AuraUSBController()
 
-    private(set) var devices = [AuraUSBDevice]()
+    let effectRunner: EffectRunner
+
+    @Published private(set) var devices = [AuraUSBDevice]()
 
     init() {
+        effectRunner = EffectRunner(controller: auraUSBController)
+
         // TODO: load saved devices from prefs
 
         watcher.onDeviceConnected = onDeviceConnected(device:)
@@ -29,7 +36,8 @@ class DeviceManager {
 
     // MARK: USBWatcher
     private func onDeviceConnected(device: HIDDevice) {
-        var usb = AuraUSBDevice(hidDevice: device)
+        print("device connected, \(device)")
+        let usb = AuraUSBDevice(hidDevice: device)
 
         do {
             try auraUSBController.getFirmwareVersion(from: device)
@@ -38,6 +46,7 @@ class DeviceManager {
         }
 
         usb.connectionState = .connecting
+
         devices.append(usb)
     }
 
@@ -54,18 +63,34 @@ class DeviceManager {
     }
 
     // MARK: AuraUSBController
-    private func onFirmware(device: HIDDevice, firmware: Data) {
+    private func onFirmware(device hid: HIDDevice, firmware: Data) {
+        if let device = device(id: hid.id) {
+            device.firmware = String(data: firmware, encoding: .utf8)
+        }
 
         do {
-            try auraUSBController.getConfigurationTable(from: device)
+            try auraUSBController.getConfigurationTable(from: hid)
         } catch {
             print("onFirmware => error: \(error)")
         }
     }
 
-    private func onConfiguration(device: HIDDevice, configuration: Data) {
+    private func onConfiguration(device hid: HIDDevice, configuration data: Data) {
         // TODO: override configuration where possible
 
-        print("boop", configuration)
+        let configuration = AuraUSBDeviceConfiguration(data: data)
+
+        if let device = device(id: hid.id) {
+            device.rgbDevice = configuration.rootDevice
+            device.addressables = configuration.addressableDevices
+
+            device.connectionState = .connected
+
+            print("connected!")
+        }
+    }
+
+    private func device(id: String) -> AuraUSBDevice? {
+        devices.first(where: { $0.hidDevice.id == id })
     }
 }

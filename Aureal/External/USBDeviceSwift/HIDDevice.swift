@@ -26,7 +26,7 @@ public struct HIDMonitorData {
     }
 }
 
-public class HIDDevice {
+public class HIDDevice: CustomStringConvertible {
     public let id:String
     public let vendorId:Int
     public let productId:Int
@@ -42,5 +42,9 @@ public class HIDDevice {
         self.vendorId = IOHIDDeviceGetProperty(self.device, kIOHIDVendorIDKey as CFString) as? Int ?? 0
         self.productId = IOHIDDeviceGetProperty(self.device, kIOHIDProductIDKey as CFString) as? Int ?? 0
         self.reportSize = IOHIDDeviceGetProperty(self.device, kIOHIDMaxInputReportSizeKey as CFString) as? Int ?? 0
+    }
+
+    public var description: String {
+        return "HIDDevice: <id: \(id), name: \(name), vendorId: \(vendorId), productId: \(productId), reportSize: \(reportSize), device: \(device)>"
     }
 }

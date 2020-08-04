@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 enum AuraDeviceConnectionState {
@@ -6,14 +7,26 @@ enum AuraDeviceConnectionState {
     case connected
 }
 
-struct AuraUSBDevice {
+class AuraUSBDevice: CustomStringConvertible {
     let hidDevice: HIDDevice
 
     var rgbDevice: AuraConnectedDevice?
     var addressables = [AuraConnectedDevice]()
     var firmware: String?
 
-    var connectionState = AuraDeviceConnectionState.disconnected
+    @Published var connectionState = AuraDeviceConnectionState.disconnected
+
+    init(hidDevice: HIDDevice) {
+        self.hidDevice = hidDevice
+    }
+
+    var name: String {
+        hidDevice.name
+    }
+
+    var description: String {
+        "<firmware: \(firmware), connectionState: \(connectionState), root: \(rgbDevice), addressables: \(addressables)>"
+    }
 }
 
 struct AuraUSBDeviceConfiguration {
@@ -67,6 +80,15 @@ struct AuraUSBDeviceConfiguration {
     func addressableLEDCount(at index: UInt8) -> UInt8 {
         let offset = offsetForDevice(at: index)
 
+        // XXX: custom overrides need to be injected
+        if index == 0 {
+            return 14
+        }
+
+        if index == 1 {
+            return 1
+        }
+
         return data[offset + 0x0]
     }
 
@@ -76,7 +98,7 @@ struct AuraUSBDeviceConfiguration {
             directChannel: 0x4,
             numberOfLEDs: mainboardLEDCount,
             type: .fixed,
-            name: nil
+            name: "Root"
         )
     }
 

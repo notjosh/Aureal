@@ -72,6 +72,8 @@ open class HIDDeviceMonitor {
 
 fileprivate extension HIDDevice {
     func read(_ inResult: IOReturn, inSender: UnsafeMutableRawPointer, type: IOHIDReportType, reportId: UInt32, report: UnsafeMutablePointer<UInt8>, reportLength: CFIndex) {
+        print("read")
+
         let data = Data(bytes: UnsafePointer<UInt8>(report), count: reportLength)
         NotificationCenter.default.post(
             name: .HIDDeviceDataReceived,
