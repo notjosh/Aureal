@@ -26,7 +26,7 @@ public struct HIDMonitorData {
     }
 }
 
-public struct HIDDevice {
+public class HIDDevice {
     public let id:String
     public let vendorId:Int
     public let productId:Int

@@ -45,24 +45,20 @@ open class HIDDeviceMonitor {
         
         RunLoop.current.run()
     }
-    
-    open func read(_ inResult: IOReturn, inSender: UnsafeMutableRawPointer, type: IOHIDReportType, reportId: UInt32, report: UnsafeMutablePointer<UInt8>, reportLength: CFIndex) {
-        let data = Data(bytes: UnsafePointer<UInt8>(report), count: reportLength)
-        NotificationCenter.default.post(name: .HIDDeviceDataReceived, object: ["data": data])
-    }
-    
+
     open func rawDeviceAdded(_ inResult: IOReturn, inSender: UnsafeMutableRawPointer, inIOHIDDeviceRef: IOHIDDevice!) {
         // It would be better to look up the report size and create a chunk of memory of that size
         let report = UnsafeMutablePointer<UInt8>.allocate(capacity: reportSize)
         let inputCallback : IOHIDReportCallback = { inContext, inResult, inSender, type, reportId, report, reportLength in
-            let this:HIDDeviceMonitor = unsafeBitCast(inContext, to: HIDDeviceMonitor.self)
-            this.read(inResult, inSender: inSender!, type: type, reportId: reportId, report: report, reportLength: reportLength)
+            let device: HIDDevice = unsafeBitCast(inContext, to: HIDDevice.self)
+            device.read(inResult, inSender: inSender!, type: type, reportId: reportId, report: report, reportLength: reportLength)
         }
-        
+
+        let device = HIDDevice(device: inIOHIDDeviceRef)
+
         //Hook up inputcallback
-        IOHIDDeviceRegisterInputReportCallback(inIOHIDDeviceRef!, report, reportSize, inputCallback, unsafeBitCast(self, to: UnsafeMutableRawPointer.self))
-        
-        let device = HIDDevice(device:inIOHIDDeviceRef)
+        IOHIDDeviceRegisterInputReportCallback(inIOHIDDeviceRef!, report, reportSize, inputCallback, unsafeBitCast(device, to: UnsafeMutableRawPointer.self))
+
         NotificationCenter.default.post(name: .HIDDeviceConnected, object: ["device": device])
     }
     
@@ -71,5 +67,18 @@ open class HIDDeviceMonitor {
         NotificationCenter.default.post(name: .HIDDeviceDisconnected, object: [
             "id": device.id
         ])
+    }
+}
+
+fileprivate extension HIDDevice {
+    func read(_ inResult: IOReturn, inSender: UnsafeMutableRawPointer, type: IOHIDReportType, reportId: UInt32, report: UnsafeMutablePointer<UInt8>, reportLength: CFIndex) {
+        let data = Data(bytes: UnsafePointer<UInt8>(report), count: reportLength)
+        NotificationCenter.default.post(
+            name: .HIDDeviceDataReceived,
+            object: [
+                "data": data,
+                "device": self,
+            ]
+        )
     }
 }

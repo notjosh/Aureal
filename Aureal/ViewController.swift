@@ -56,9 +56,9 @@ class ViewController: NSViewController {
 
     private var effects = [Effect]()
 
-    private var connectionState: ConnectionState {
-        AppDelegate.shared.controller?.connectionState ?? .disconnected
-    }
+//    private var connectionState: ConnectionState {
+//        AppDelegate.shared.controller?.connectionState ?? .disconnected
+//    }
 
     private var observation: Any? = nil
     private var activity: NSObjectProtocol?
@@ -164,24 +164,24 @@ class ViewController: NSViewController {
     }
 
     private func updateConnectionState() {
-        connectedStatusLabel.stringValue = connectionState.description
-
-        if connectionState == .connected {
-            update()
-        }
+//        connectedStatusLabel.stringValue = connectionState.description
+//
+//        if connectionState == .connected {
+//            update()
+//        }
     }
 
     func send(_ command: Command) {
-        guard let controller = AppDelegate.shared.controller else {
-            print("no controller?")
-            return
-        }
-
-        do {
-            try controller.send(command: command)
-        } catch {
-            print(error)
-        }
+//        guard let controller = AppDelegate.shared.controller else {
+//            print("no controller?")
+//            return
+//        }
+//
+//        do {
+//            try controller.send(command: command)
+//        } catch {
+//            print(error)
+//        }
     }
 }
 
@@ -191,12 +191,12 @@ fileprivate extension NSColor {
     }
 }
 
-fileprivate extension ConnectionState {
-    var description: String {
-        switch self {
-        case .connected: return "Connected"
-        case .disconnected: return "Disconnected"
-        case .connecting: return "Connecting..."
-        }
-    }
-}
+//fileprivate extension ConnectionState {
+//    var description: String {
+//        switch self {
+//        case .connected: return "Connected"
+//        case .disconnected: return "Disconnected"
+//        case .connecting: return "Connecting..."
+//        }
+//    }
+//}

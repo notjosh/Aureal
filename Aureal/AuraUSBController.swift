@@ -10,32 +10,11 @@ enum AuraUSBControllerError: Error {
     case InvalidResponse(code: IOReturn)
 }
 
-enum ConnectionState {
-    case disconnected
-    case connecting
-    case connected
-}
-
 class AuraUSBController {
-    private(set) var connectionState = ConnectionState.disconnected {
-        didSet {
-            NotificationCenter.default.post(name: .AuraUSBControllerConnectionStateUpdated, object: [
-                "connectionState": connectionState
-            ])
-        }
-    }
-    private(set) var device: HIDDevice
-    private var auraUSBDevices = [AuraUSBDevice]()
+    var onFirmware: ((HIDDevice, Data) -> Void)?
+    var onConfiguration: ((HIDDevice, Data) -> Void)?
 
-    init(_ device: HIDDevice) {
-        self.device = device
-    }
-
-    deinit {
-        connectionState = .disconnected
-    }
-
-    func handle(data: Data) throws {
+    func handle(data: Data, for device: HIDDevice) throws {
         guard data.count == AuraCommandLength else {
             print("Expected length \(AuraCommandLength), got: \(data.count). Ignoring.")
             return
@@ -48,105 +27,98 @@ class AuraUSBController {
 
         switch data[1] {
         case 0x02:
-            handleFirmwareVersion(data.subdata(in: 2..<18))
-
-            // next:
-            try getConfigurationTable()
+            onFirmware?(device, data.subdata(in: 2..<18))
         case 0x30:
-            handleConfigurationTable(data.subdata(in: 4..<64))
-
-            connectionState = .connected
+            onConfiguration?(device, data.subdata(in: 4..<64))
         default:
             print("unknown aura command: \(data[1])")
         }
     }
 
-    func handshake() throws {
-        connectionState = .connecting
-
-        try getFirmwareVersion()
+    func handshake(to device: HIDDevice) throws {
+        try getFirmwareVersion(from: device)
     }
 
-    static var step: Int = 0
-    var isDirect = false
-    func send(command: Command) throws {
-        // FIXME: this shouldn't need to know directly about EffectCommand
+//    static var step: Int = 0
+//    var isDirect = false
+//    func send(command: Command) throws {
+//        // FIXME: this shouldn't need to know directly about EffectCommand
+//
+//        if let effectCommand = command as? EffectCommand {
+//            isDirect = false
+//            var startLED: UInt8 = 0
+//            for auraUSBDevice in auraUSBDevices {
+//                let rgbs = auraUSBDevice.type == .addressable
+//                    ? [effectCommand.color]
+//                    : [CommandColor](repeating: effectCommand.color, count: Int(8))
+//
+//                try setEffect(effect: effectCommand.effect, effectChannel: auraUSBDevice.effectChannel)
+//                try setColors(
+//                    rgbs,
+//                    startLED: startLED,
+//                    channel: auraUSBDevice.effectChannel,
+//                    isFixed: auraUSBDevice.type == .fixed
+//                )
+//
+//                startLED += UInt8(rgbs.count)
+//            }
+//
+//            try commit()
+//        }
+//
+//        if let directCommand = command as? DirectCommand {
+//            let ledCountPerCommand = 20
+//
+//            for auraUSBDevice in auraUSBDevices {
+//                if !isDirect {
+//                    try setEffect(
+//                        effect: .direct,
+//                        effectChannel: auraUSBDevice.effectChannel
+//                    )
+//                }
+//
+//                var startLED: UInt8 = 0
+//
+//                let rgbs = directCommand.rgbs(
+//                    capacity: Int(auraUSBDevice.numberOfLEDs),
+//                    step: type(of: self).step
+//                )
+//
+//                let groups = rgbs.chunked(into: ledCountPerCommand)
+//                for (index, group) in groups.enumerated() {
+//                    try setDirect(
+//                        group,
+//                        startLED: startLED,
+//                        channel: auraUSBDevice.directChannel,
+//                        apply: index >= groups.count - 1
+//                    )
+//
+//                    startLED += UInt8(group.count)
+//                }
+//            }
+//
+//            isDirect = true
+//
+//            type(of: self).step += 1
+//        }
+//    }
 
-        if let effectCommand = command as? EffectCommand {
-            isDirect = false
-            var startLED: UInt8 = 0
-            for auraUSBDevice in auraUSBDevices {
-                let rgbs = auraUSBDevice.type == .addressable
-                    ? [effectCommand.color]
-                    : [CommandColor](repeating: effectCommand.color, count: Int(8))
-
-                try setEffect(effect: effectCommand.effect, effectChannel: auraUSBDevice.effectChannel)
-                try setColors(
-                    rgbs,
-                    startLED: startLED,
-                    channel: auraUSBDevice.effectChannel,
-                    isFixed: auraUSBDevice.type == .fixed
-                )
-
-                startLED += UInt8(rgbs.count)
-            }
-
-            try commit()
-        }
-
-        if let directCommand = command as? DirectCommand {
-            let ledCountPerCommand = 20
-
-            for auraUSBDevice in auraUSBDevices {
-                if !isDirect {
-                    try setEffect(
-                        effect: .direct,
-                        effectChannel: auraUSBDevice.effectChannel
-                    )
-                }
-
-                var startLED: UInt8 = 0
-
-                let rgbs = directCommand.rgbs(
-                    capacity: Int(auraUSBDevice.numberOfLEDs),
-                    step: type(of: self).step
-                )
-
-                let groups = rgbs.chunked(into: ledCountPerCommand)
-                for (index, group) in groups.enumerated() {
-                    try setDirect(
-                        group,
-                        startLED: startLED,
-                        channel: auraUSBDevice.directChannel,
-                        apply: index >= groups.count - 1
-                    )
-
-                    startLED += UInt8(group.count)
-                }
-            }
-
-            isDirect = true
-
-            type(of: self).step += 1
-        }
-    }
-
-    func getFirmwareVersion() throws {
+    func getFirmwareVersion(from device: HIDDevice) throws {
         try send(commandBytes: [
             AuraCommand,
             0x82,
-        ])
+        ], to: device)
     }
 
-    func getConfigurationTable() throws {
+    func getConfigurationTable(from device: HIDDevice) throws {
         // 0xB0
         try send(commandBytes: [
             AuraCommand,
             0xb0,
-        ])
+        ], to: device)
     }
 
-    func setDirect(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, apply: Bool) throws {
+    func setDirect(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, apply: Bool, to device: HIDDevice) throws {
 //        print(rgbs.count)
         try send(
             commandBytes: [
@@ -156,11 +128,12 @@ class AuraUSBController {
                 startLED,
                 UInt8(rgbs.count)
             ]
-            + rgbs.flatMap { [$0.r, $0.g, $0.b] }
+            + rgbs.flatMap { [$0.r, $0.g, $0.b] },
+            to: device
         )
     }
     
-    func setEffect(effect: AuraEffect, effectChannel: UInt8) throws {
+    func setEffect(effect: AuraEffect, effectChannel: UInt8, to device: HIDDevice) throws {
         try send(commandBytes: [
             AuraCommand,
             0x35, // "effect control mode"
@@ -168,10 +141,10 @@ class AuraUSBController {
             0x0, // unknown
             0x0, // unknown
             UInt8(effect.rawValue),
-        ])
+        ], to: device)
     }
     
-    func setColors(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, isFixed: Bool) throws {
+    func setColors(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, isFixed: Bool, to device: HIDDevice) throws {
         if rgbs.count == 0 {
             return
         }
@@ -185,19 +158,20 @@ class AuraUSBController {
                 0x0, // dunno
                 ]
                 + [UInt8](repeating: 0, count: Int(startLED) * 3)
-                + rgbs.flatMap { [$0.r, $0.g, $0.b] }
+                + rgbs.flatMap { [$0.r, $0.g, $0.b] },
+            to: device
         )
     }
     
-    func commit() throws {
+    func commit(to device: HIDDevice) throws {
         try send(commandBytes: [
             AuraCommand,
             0x3f,
             0x55
-        ])
+        ], to: device)
     }
         
-    private func send(commandBytes: [UInt8]) throws {
+    private func send(commandBytes: [UInt8], to device: HIDDevice) throws {
         guard commandBytes.count <= AuraCommandLength else {
             throw AuraUSBControllerError.CommandTooLong
         }
@@ -206,8 +180,6 @@ class AuraUSBController {
             repeating: 0,
             count: AuraCommandLength - commandBytes.count
         )
-
-//        print(bytes.count, bytes.hexa)
 
         let response = IOHIDDeviceSetReport(
             device.device,
@@ -228,76 +200,46 @@ class AuraUSBController {
         }
     }
 
-    private func handleFirmwareVersion(_ data: Data) {
-        print("firmware: \(data)")
-
-        let name = String(decoding: data, as: UTF8.self)
-
-        print(name)
-    }
-
-    private func handleConfigurationTable(_ data: Data) {
-        print("config: \(data)")
-
-        for i in stride(from: 0, to: data.count, by: 6) {
-            print(
-                String(
-                    format: "%02X: %02X %02X %02X %02X %02X %02X ",
-                    arguments: [
-                        i,
-                        data[i + 0],
-                        data[i + 1],
-                        data[i + 2],
-                        data[i + 3],
-                        data[i + 4],
-                        data[i + 5],
-                    ]
-                )
-            )
-        }
-
-        // config: 60 bytes
-//        00: 1E 9F 02 01 00 00 <- 2 addressable devices
-//        06: 78 3C 00 01 00 00 <- addressable device 1: 0x78 (120) LEDs
-//        0C: 78 3C 00 00 00 00 <- addressable device 2: 0x78 (120) LEDs
-//        12: 00 00 00 00 00 00
-//        18: 00 00 00 08 0A 02 <- mainboard: 8 mainboard LEDs
-//        1E: 01 F4 00 00 00 00
-//        24: 00 00 00 00 00 00
-//        2A: 00 00 00 00 00 00
-//        30: 00 00 00 00 00 00
-//        36: 00 00 00 00 00 00
-
-        let addressableChannelCount = data[0x02]
-        let mainboardLEDCount = data[0x1b]
-
-        print("addressableChannelCount: \(addressableChannelCount)")
-        print("mainboardLEDCount: \(mainboardLEDCount)")
-
-        configureForDevices(
-            count: addressableChannelCount,
-            mainboardLEDCount: mainboardLEDCount
-        )
-    }
-
-    private func configureForDevices(count: UInt8, mainboardLEDCount: UInt8) {
-        auraUSBDevices.removeAll()
-
-        // mainboard
-        auraUSBDevices.append(
-            .init(effectChannel: 0x0, directChannel: 0x4, numberOfLEDs: mainboardLEDCount, type: .fixed)
-        )
-
-        // addressables
-        auraUSBDevices.append(contentsOf:
-            (0..<count).map { index -> AuraUSBDevice in
-                .init(
-                    effectChannel: index + 1,
-                    directChannel: index,
-                    numberOfLEDs: 0x78, // TODO: <- hardcoded for now
-                    type: .addressable
-                )
-            }
-        )
-    }
+//    private func handleFirmwareVersion(_ data: Data) -> String? {
+//        return String(decoding: data, as: UTF8.self)
+//    }
+//
+//    private func handleConfigurationTable(_ data: Data) -> AuraUSBControllerConfiguration? {
+//
+//
+//        let addressableChannelCount = data[0x02]
+//        let mainboardLEDCount = data[0x1b]
+//
+//        print("addressableChannelCount: \(addressableChannelCount)")
+//        print("mainboardLEDCount: \(mainboardLEDCount)")
+//
+//        return .init(
+//            addressableChannels: (0..<addressableChannelCount).map { index -> AuraUSBControllerConfiguration.AddressableChannel in
+//                let offset = Int(6 * (index + 1))
+//                return .init(
+//                    numberOfLEDs: Int(data[offset + 0x0])
+//                )
+//            },
+//            mainboardLEDCount: Int(mainboardLEDCount)
+//        )
+//
+////        auraUSBDevices.removeAll()
+////
+////        // mainboard
+////        auraUSBDevices.append(
+////            .init(, numberOfLEDs: mainboardLEDCount, type: .fixed)
+////        )
+////
+////        // addressables
+////        auraUSBDevices.append(contentsOf:
+////            (0..<addressableChannelCount).map { index -> AuraUSBDevice in
+////                .init(
+////                    effectChannel: index + 1,
+////                    directChannel: index,
+////                    numberOfLEDs: 0x78, // TODO: <- hardcoded for now
+////                    type: .addressable
+////                )
+////            }
+////        )
+//    }
 }
