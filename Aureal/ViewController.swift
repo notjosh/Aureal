@@ -1,51 +1,6 @@
 import Cocoa
 import Combine
 
-enum EffectType {
-    case builtInEffect
-    case direct
-}
-
-enum EffectColorMode {
-    case none
-    case single
-}
-
-protocol Effect {
-    var name: String { get }
-    var type: EffectType { get }
-    var colorMode: EffectColorMode { get }
-}
-
-struct BuiltInEffect: Effect {
-    let mode: AuraEffect
-
-    var name: String {
-        "Built-in: \(mode.name)"
-    }
-
-    var colorMode: EffectColorMode {
-        mode.isColorable ? .single : .none
-    }
-
-    var type: EffectType {
-        .builtInEffect
-    }
-}
-
-struct DirectEffect: Effect {
-    var name: String {
-        "Direct"
-    }
-
-    var colorMode: EffectColorMode {
-        .single
-    }
-
-    var type: EffectType {
-        .direct
-    }
-}
 
 class ViewModel {
     private let deviceManager = DeviceManager.shared

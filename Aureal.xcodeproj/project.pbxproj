@@ -24,6 +24,7 @@
 		42F4D44124D0DE1D0031C650 /* Aura.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D44024D0DE1D0031C650 /* Aura.swift */; };
 		42F4D44324D178100031C650 /* HIDDeviceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D44224D178100031C650 /* HIDDeviceMonitor.swift */; };
 		42F4D44524D178200031C650 /* HIDDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D44424D178200031C650 /* HIDDevice.swift */; };
+		42FE50D724DC903000E4B00A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FE50D624DC903000E4B00A /* GradientView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		42F4D44024D0DE1D0031C650 /* Aura.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aura.swift; sourceTree = "<group>"; };
 		42F4D44224D178100031C650 /* HIDDeviceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HIDDeviceMonitor.swift; sourceTree = "<group>"; };
 		42F4D44424D178200031C650 /* HIDDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HIDDevice.swift; sourceTree = "<group>"; };
+		42FE50D624DC903000E4B00A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				427A570524D9D26F00760111 /* NSView+Extensions.swift */,
 				427A570124D9985A00760111 /* DeviceManager.swift */,
 				427A570724D9D89100760111 /* EffectRunner.swift */,
+				42FE50D624DC903000E4B00A /* GradientView.swift */,
 				42F4D42524D0D3340031C650 /* Assets.xcassets */,
 				42F4D42724D0D3340031C650 /* Main.storyboard */,
 				42F4D42A24D0D3340031C650 /* Info.plist */,
@@ -201,6 +204,7 @@
 			files = (
 				42F4D42424D0D3330031C650 /* ViewController.swift in Sources */,
 				427A570224D9985A00760111 /* DeviceManager.swift in Sources */,
+				42FE50D724DC903000E4B00A /* GradientView.swift in Sources */,
 				426A744024D2ECD500749F38 /* Array+Extensions.swift in Sources */,
 				4277A04624D4379D005AB0DA /* USBWatcher.swift in Sources */,
 				427A570824D9D89100760111 /* EffectRunner.swift in Sources */,

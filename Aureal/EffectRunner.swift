@@ -26,6 +26,7 @@ class EffectRunner {
         if let activity = activity {
             ProcessInfo.processInfo.endActivity(activity)
         }
+        activity = nil
     }
 
     func run(command: Command?, on device: AuraUSBDevice) throws {
@@ -42,8 +43,10 @@ class EffectRunner {
         if let activity = activity {
             ProcessInfo.processInfo.endActivity(activity)
         }
+        activity = nil
 
-        if command is DirectCommand {
+        if let command = command,
+           command.isAnimated {
             let interval: TimeInterval = 0.01
             let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
                 do {

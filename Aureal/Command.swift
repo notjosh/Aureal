@@ -12,9 +12,12 @@ struct CommandColor {
     }
 
     init(color: NSColor) {
-        let r: UInt8 = UInt8(color.redComponent * 255)
-        let g: UInt8 = UInt8(color.greenComponent * 255)
-        let b: UInt8 = UInt8(color.blueComponent * 255)
+        let rgb = color.usingColorSpace(NSColorSpace.sRGB)!
+//        let rgb = color
+
+        let r: UInt8 = UInt8(rgb.redComponent * 255)
+        let g: UInt8 = UInt8(rgb.greenComponent * 255)
+        let b: UInt8 = UInt8(rgb.blueComponent * 255)
 
         self.init(r: r, g: g, b: b)
     }
@@ -36,6 +39,7 @@ struct CommandColor {
 }
 
 protocol Command {
+    var isAnimated: Bool { get }
 }
 
 protocol DirectCommand: Command {
@@ -52,10 +56,18 @@ struct EffectCommand: Command {
         self.effect = effect
         self.color = color
     }
+
+    var isAnimated: Bool {
+        false
+    }
 }
 
 struct StaticDirectCommand: DirectCommand {
     let color: CommandColor
+
+    var isAnimated: Bool {
+        false
+    }
 
     init(color: CommandColor) {
         self.color = color
@@ -66,14 +78,20 @@ struct StaticDirectCommand: DirectCommand {
     }
 }
 
-struct StaticSpacedDirectCommand: DirectCommand {
+struct SpacedDirectCommand: DirectCommand {
     let color: CommandColor
+
+    var isAnimated: Bool {
+        true
+    }
 
     init(color: CommandColor) {
         self.color = color
     }
 
     func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        let step = step / 10
+
         let colors = [color, .black]
             .stretched(by: 2)
 
@@ -83,38 +101,89 @@ struct StaticSpacedDirectCommand: DirectCommand {
     }
 }
 
-struct GradientDirectCommand: DirectCommand {
-    let fromColor: CommandColor
-    let toColor: CommandColor
+class GradientDirectCommand: DirectCommand {
+    let gradients: [RGBGradient]
 
-    init(fromColor: CommandColor, toColor: CommandColor = .blue) {
-        self.fromColor = fromColor
-        self.toColor = toColor
+    private let colors: [CommandColor]
+    private let steps = 200
+
+    var isAnimated: Bool {
+        true
+    }
+
+    convenience init(from: CommandColor, to: CommandColor) {
+        self.init(colors: [from, to, from])
+    }
+
+    convenience init(colors: [CommandColor]) {
+        let gradients: [RGBGradient]
+        if colors.count <= 0 {
+            gradients = [RGBGradient(from: CommandColor.black, to: CommandColor.black)]
+        } else if colors.count == 1 {
+            gradients = [RGBGradient(from: colors[0], to: colors[0])]
+        } else {
+            var gx = [RGBGradient]()
+
+            for idx in 0..<colors.count - 1 {
+                let from = colors[idx]
+                let to = colors[idx + 1]
+
+                let next = RGBGradient(from: from, to: to)
+                gx.append(next)
+            }
+
+            gradients = gx
+        }
+
+        self.init(gradients: gradients)
+    }
+
+    init(gradients: [RGBGradient]) {
+        self.gradients = gradients
+
+        var colors = [CommandColor]()
+        for gradient in gradients {
+            colors += gradient.colors(steps)
+        }
+
+        self.colors = colors
     }
 
     func rgbs(capacity: Int, step: Int) -> [CommandColor] {
-        (0..<capacity).map { idx in
-            // seems my front case has "120" reported leds, but 10 on top of case, and 14 in front panel irl. hm.
-            let percentange = min(Double(idx) / Double(16), 1)
-//            let percentange = Double(idx % 4) / Double(4)
+        let step = step % colors.count
 
-            let r = Int(fromColor.r) + Int(Double(Int(toColor.r) - Int(fromColor.r)) * percentange)
-            let g = Int(fromColor.g) + Int(Double(Int(toColor.g) - Int(fromColor.g)) * percentange)
-            let b = Int(fromColor.b) + Int(Double(Int(toColor.b) - Int(fromColor.b)) * percentange)
-
-            return CommandColor(
-                r: UInt8(r),
-                g: UInt8(g),
-                b: UInt8(b)
-            )
+        return (0..<capacity).map { idx in
+            let offset = (idx * (steps / 10) - step) %% colors.count
+            return colors[offset]
         }
     }
 }
 
-struct PlaygroundDirectCommand2: DirectCommand {
+class RollingGradientDirectCommand: GradientDirectCommand {
+    override init(gradients: [RGBGradient]) {
+        guard gradients.count > 0 else {
+            super.init(gradients: gradients)
+            return
+        }
+
+        let wrap = RGBGradient(
+            from: gradients.last!.to,
+            to: gradients.first!.from
+        )
+
+        super.init(gradients: gradients + [wrap])
+    }
+}
+
+struct Patriotism🦅DirectCommand: DirectCommand {
     let colors = [CommandColor.red, CommandColor.white, CommandColor.blue].stretched(by: 2)
 
+    var isAnimated: Bool {
+        true
+    }
+
     func rgbs(capacity: Int, step: Int) -> [CommandColor] {
+        let step = step / 10
         let out = colors
             .wrap(first: step % colors.count)
             .repeated(capacity: capacity)
@@ -123,18 +192,13 @@ struct PlaygroundDirectCommand2: DirectCommand {
     }
 }
 
-struct PlaygroundDirectCommand: DirectCommand {
-    let colors = [CommandColor.red, CommandColor.white, CommandColor.blue].stretched(by: 2)
-
-    func rgbs(capacity: Int, step: Int) -> [CommandColor] {
-        guard capacity != 8 else {
-            return [.white].repeated(capacity: capacity)
-        }
-
-        var out = [CommandColor.red].repeated(capacity: capacity)
-
-        out[step % out.count] = .white
-
-        return Array(out)
+// essentially "%", but also works on negative numbers
+// via https://stackoverflow.com/a/59461073
+infix operator %%
+extension Int {
+    static func %% (_ left: Int, _ right: Int) -> Int {
+        if left >= 0 { return left % right }
+        if left >= -right { return (left + right) }
+        return ((left % right) + right) % right
     }
 }

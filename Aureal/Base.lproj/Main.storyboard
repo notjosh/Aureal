@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17140" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17147" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17140"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17147"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -755,11 +755,11 @@
             <objects>
                 <viewController storyboardIdentifier="DeviceViewController" id="nPQ-ja-zmd" customClass="DeviceViewController" customModule="Aureal" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Nd3-YR-M1S">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="97"/>
+                        <rect key="frame" x="0.0" y="0.0" width="338" height="155"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BFs-lm-RfE">
-                                <rect key="frame" x="-2" y="81" width="77" height="16"/>
+                                <rect key="frame" x="-2" y="139" width="77" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Connected?" id="B7G-f6-Gy0">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -767,7 +767,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7b9-y3-9RL">
-                                <rect key="frame" x="79" y="81" width="373" height="16"/>
+                                <rect key="frame" x="79" y="139" width="261" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="MWd-gB-42Q">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -775,7 +775,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8GE-GS-gOO">
-                                <rect key="frame" x="-2" y="49" width="455" height="25"/>
+                                <rect key="frame" x="-2" y="107" width="343" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="uuH-5D-2XF" id="sz8-7T-Abo">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -791,43 +791,89 @@
                                     <action selector="handleEffectWithSender:" target="nPQ-ja-zmd" id="dni-yI-rVZ"/>
                                 </connections>
                             </popUpButton>
-                            <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="fBn-NA-y2L">
-                                <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="KyH-Uw-LED" customClass="GradientView" customModule="Aureal" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="305" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="44" id="Rz4-Bd-0Q1"/>
-                                    <constraint firstAttribute="height" constant="44" id="rdD-Be-LdV"/>
+                                    <constraint firstAttribute="height" constant="50" id="Y7W-1y-mWj"/>
                                 </constraints>
-                                <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <connections>
-                                    <action selector="handleColorWithSender:" target="nPQ-ja-zmd" id="8ga-eV-udV"/>
-                                </connections>
-                            </colorWell>
+                            </customView>
+                            <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rlb-3p-wmJ">
+                                <rect key="frame" x="0.0" y="58" width="338" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="7ti-iI-KEy"/>
+                                </constraints>
+                            </stackView>
+                            <stackView distribution="fillEqually" orientation="vertical" alignment="leading" spacing="2" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ehq-om-1rQ">
+                                <rect key="frame" x="313" y="0.0" width="25" height="50"/>
+                                <subviews>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ilh-4e-EB2">
+                                        <rect key="frame" x="-7" y="19" width="39" height="36"/>
+                                        <buttonCell key="cell" type="push" title="+" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="RD4-qJ-Whh">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="handleAddColorWithSender:" target="nPQ-ja-zmd" id="noi-6H-UhN"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hIz-U1-HEH">
+                                        <rect key="frame" x="-7" y="-7" width="39" height="36"/>
+                                        <buttonCell key="cell" type="push" title="-" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="e3m-1G-O1r">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="handleRemoveColorWithSender:" target="nPQ-ja-zmd" id="bHy-ix-wax"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="rfH-dp-zBU"/>
+                                </constraints>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="fBn-NA-y2L" firstAttribute="leading" secondItem="Nd3-YR-M1S" secondAttribute="leading" id="4se-iy-IbY"/>
-                            <constraint firstAttribute="bottom" secondItem="fBn-NA-y2L" secondAttribute="bottom" id="9bv-6j-EzN"/>
+                            <constraint firstItem="KyH-Uw-LED" firstAttribute="top" secondItem="Rlb-3p-wmJ" secondAttribute="bottom" constant="8" id="1El-Bv-VPY"/>
+                            <constraint firstItem="ehq-om-1rQ" firstAttribute="height" secondItem="KyH-Uw-LED" secondAttribute="height" id="1LI-Qt-air"/>
                             <constraint firstItem="BFs-lm-RfE" firstAttribute="leading" secondItem="Nd3-YR-M1S" secondAttribute="leading" id="Diw-2J-od3"/>
                             <constraint firstItem="8GE-GS-gOO" firstAttribute="top" secondItem="BFs-lm-RfE" secondAttribute="bottom" constant="8" id="FnI-B0-T9v"/>
+                            <constraint firstAttribute="bottom" secondItem="ehq-om-1rQ" secondAttribute="bottom" id="Fsp-Th-qhv"/>
                             <constraint firstAttribute="trailing" secondItem="8GE-GS-gOO" secondAttribute="trailing" id="GKp-0d-zUC"/>
-                            <constraint firstItem="fBn-NA-y2L" firstAttribute="top" secondItem="8GE-GS-gOO" secondAttribute="bottom" constant="8" id="GeY-yf-b4M"/>
+                            <constraint firstAttribute="trailing" secondItem="Rlb-3p-wmJ" secondAttribute="trailing" id="H5B-DN-ZR6"/>
+                            <constraint firstAttribute="trailing" secondItem="ehq-om-1rQ" secondAttribute="trailing" id="K9y-a7-4jT"/>
                             <constraint firstItem="7b9-y3-9RL" firstAttribute="leading" secondItem="BFs-lm-RfE" secondAttribute="trailing" constant="8" id="KfA-wC-Su9"/>
+                            <constraint firstItem="Rlb-3p-wmJ" firstAttribute="leading" secondItem="Nd3-YR-M1S" secondAttribute="leading" id="NTi-35-lk9"/>
                             <constraint firstItem="7b9-y3-9RL" firstAttribute="leading" secondItem="BFs-lm-RfE" secondAttribute="trailing" constant="8" id="T6F-8v-O9S"/>
                             <constraint firstItem="BFs-lm-RfE" firstAttribute="top" secondItem="Nd3-YR-M1S" secondAttribute="top" id="UPQ-fB-Qow"/>
+                            <constraint firstItem="KyH-Uw-LED" firstAttribute="leading" secondItem="Nd3-YR-M1S" secondAttribute="leading" id="g2D-Ku-GWT"/>
                             <constraint firstItem="8GE-GS-gOO" firstAttribute="leading" secondItem="Nd3-YR-M1S" secondAttribute="leading" id="id9-kG-dWR"/>
                             <constraint firstItem="7b9-y3-9RL" firstAttribute="height" secondItem="BFs-lm-RfE" secondAttribute="height" id="nzo-Yq-MZ9"/>
+                            <constraint firstItem="ehq-om-1rQ" firstAttribute="leading" secondItem="KyH-Uw-LED" secondAttribute="trailing" constant="8" id="otN-LZ-FaZ"/>
                             <constraint firstAttribute="trailing" secondItem="7b9-y3-9RL" secondAttribute="trailing" id="rHX-y3-agZ"/>
+                            <constraint firstItem="Rlb-3p-wmJ" firstAttribute="top" secondItem="8GE-GS-gOO" secondAttribute="bottom" constant="8" id="s3O-3J-P6r"/>
+                            <constraint firstAttribute="bottom" secondItem="KyH-Uw-LED" secondAttribute="bottom" id="tuw-s3-XRW"/>
                             <constraint firstItem="7b9-y3-9RL" firstAttribute="centerY" secondItem="BFs-lm-RfE" secondAttribute="centerY" id="zaJ-mP-GK4"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="colorWell" destination="fBn-NA-y2L" id="tSM-Rp-5Mo"/>
+                        <outlet property="colorWellsStackView" destination="Rlb-3p-wmJ" id="zAK-Tk-oUt"/>
                         <outlet property="connectedStatusLabel" destination="7b9-y3-9RL" id="aqS-xk-8Ob"/>
                         <outlet property="effectsPopUpButton" destination="8GE-GS-gOO" id="z52-xJ-kiU"/>
+                        <outlet property="gradientControlsStackView" destination="ehq-om-1rQ" id="zaP-rB-aRD"/>
+                        <outlet property="gradientView" destination="KyH-Uw-LED" id="vXg-Gi-HZL"/>
                     </connections>
                 </viewController>
                 <customObject id="p6c-tb-361" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="650" y="749"/>
+            <point key="canvasLocation" x="707" y="792.5"/>
         </scene>
     </scenes>
 </document>

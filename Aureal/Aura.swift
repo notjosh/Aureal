@@ -59,6 +59,16 @@ enum AuraEffect: Int, CaseIterable {
         case .direct: return "(direct)"
         }
     }
+
+    static var effects: [Self] {
+        let hiddenEffects = [
+            Self.direct,
+        ]
+
+        return Self.allCases.filter { effect -> Bool in
+            !hiddenEffects.contains(effect)
+        }
+    }
 }
 
 enum AuraControlMode: UInt8 {
