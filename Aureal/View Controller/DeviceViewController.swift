@@ -1,79 +1,6 @@
 import Cocoa
 import Combine
 
-enum EffectType {
-    case builtInEffect
-    case direct
-}
-
-enum EffectColorMode: Equatable {
-    case none
-    case count(Int)
-    case dynamic
-
-    var count: Int {
-        switch self {
-        case .none:
-            return 0
-        case .count(let count):
-            return count
-        case .dynamic:
-            return 3
-        }
-    }
-
-    var isDynamic: Bool {
-        self == .dynamic
-    }
-}
-
-protocol Effect {
-    var name: String { get }
-    var type: EffectType { get }
-    var colorMode: EffectColorMode { get }
-
-    func command(for colors: [CommandColor]) -> Command
-}
-
-struct BuiltInEffect: Effect {
-    let mode: AuraEffect
-
-    var name: String {
-        "Built-in: \(mode.name)"
-    }
-
-    var colorMode: EffectColorMode {
-        mode.isColorable ? .count(1) : .none
-    }
-
-    var type: EffectType {
-        .builtInEffect
-    }
-
-    func command(for colors: [CommandColor]) -> Command {
-        let command = EffectCommand(
-            mode,
-            color: mode.isColorable ? colors.first ?? .black : .black
-        )
-
-        return command
-    }
-}
-
-struct DirectEffect: Effect {
-    let name: String
-    let builder: (([CommandColor]) -> DirectCommand)
-    let colorMode: EffectColorMode
-
-    var type: EffectType {
-        .direct
-    }
-
-    func command(for colors: [CommandColor]) -> Command {
-        return builder(colors)
-    }
-}
-
 class DeviceViewModel {
     private let device: AuraUSBDevice
 
@@ -98,9 +25,9 @@ class DeviceViewController: NSViewController {
     var viewModel: DeviceViewModel!
     var runEffect: ((Command) -> Void)?
 
-    let defaultPalette = [
-        NSColor.goodReddish,
-        NSColor.goodYellowish,
+    let defaultPalette = [NSColor]([
+        .goodReddish,
+        .goodYellowish,
         .bestPink,
         .blue,
         .green,
@@ -109,7 +36,7 @@ class DeviceViewController: NSViewController {
         .magenta,
         .orange,
         .yellow,
-    ]
+    ])
 
     private var currentEffect: Effect!
     private var currentColors = [NSColor]()
@@ -219,9 +146,6 @@ class DeviceViewController: NSViewController {
     }
 
     private func updateColorsStackView() {
-        // TODO: only replace the ones we need to
-        colorWellsStackView.arrangedSubviews.forEach { colorWellsStackView.removeView($0) }
-
         let count = currentColorsVisibleCount
 
         if count > currentColors.count {
@@ -230,20 +154,30 @@ class DeviceViewController: NSViewController {
             }
         }
 
-        for idx in 0..<count {
-            let colorWell = NSColorWell(frame: .init(x: 0, y: 0, width: 44, height: 44))
-            colorWell.tag = idx
-            colorWell.color = currentColors[idx]
-            colorWell.target = self
-            colorWell.action = #selector(handleColor(sender:))
-            colorWell.isBordered = true
+        if count > colorWellsStackView.arrangedSubviews.count {
+            for idx in colorWellsStackView.arrangedSubviews.count..<count {
+                let colorWell = NSColorWell(frame: .init(x: 0, y: 0, width: 44, height: 44))
+                colorWell.tag = idx
+                colorWell.color = currentColors[idx]
+                colorWell.target = self
+                colorWell.action = #selector(handleColor(sender:))
+                colorWell.isBordered = true
 
-            colorWellsStackView.addArrangedSubview(colorWell)
+                colorWellsStackView.addArrangedSubview(colorWell)
 
-            handleColor(sender: colorWell)
+                handleColor(sender: colorWell)
+            }
+        } else {
+            for _ in count..<colorWellsStackView.arrangedSubviews.count {
+                if  colorWellsStackView.arrangedSubviews.count > 0 {
+                    colorWellsStackView.removeView(
+                        colorWellsStackView.arrangedSubviews[colorWellsStackView.arrangedSubviews.count - 1]
+                    )
+                }
+            }
         }
 
-        gradientControlsStackView.isHidden = !currentEffect.colorMode.isDynamic
+        gradientControlsStackView.isHidden = currentEffect.colorMode != .dynamic
 
         updateGradient()
     }

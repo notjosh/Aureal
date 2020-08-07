@@ -25,7 +25,12 @@ class AuraUSBDevice: CustomStringConvertible {
     }
 
     var description: String {
-        "<firmware: \(firmware), connectionState: \(connectionState), root: \(rgbDevice), addressables: \(addressables)>"
+        "<" +
+            "firmware: \(String(describing: firmware)), " +
+            "connectionState: \(connectionState), " +
+            "root: \(String(describing: rgbDevice)), " +
+            "addressables: \(addressables)" +
+            ">"
     }
 }
 

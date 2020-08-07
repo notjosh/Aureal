@@ -5,7 +5,6 @@ public extension Notification.Name {
 }
 
 enum AuraUSBControllerError: Error {
-    case InterfaceUnavailable
     case CommandTooLong
     case InvalidResponse(code: IOReturn)
 }
@@ -36,8 +35,6 @@ class AuraUSBController {
     }
 
     func getFirmwareVersion(from device: HIDDevice) throws {
-        print("get firmware")
-
         try send(commandBytes: [
             AuraCommand,
             0x82,
@@ -53,7 +50,6 @@ class AuraUSBController {
     }
 
     func setDirect(_ rgbs: [CommandColor], startLED: UInt8, channel: UInt8, apply: Bool, to device: HIDDevice) throws {
-//        print(rgbs.count)
         try send(
             commandBytes: [
                 AuraCommand,

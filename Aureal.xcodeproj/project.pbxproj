@@ -25,6 +25,9 @@
 		42F4D44324D178100031C650 /* HIDDeviceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D44224D178100031C650 /* HIDDeviceMonitor.swift */; };
 		42F4D44524D178200031C650 /* HIDDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F4D44424D178200031C650 /* HIDDevice.swift */; };
 		42FE50D724DC903000E4B00A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FE50D624DC903000E4B00A /* GradientView.swift */; };
+		42FE50D924DCDF9F00E4B00A /* Effect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FE50D824DCDF9F00E4B00A /* Effect.swift */; };
+		42FE50DC24DCE2A200E4B00A /* CommandColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FE50DB24DCE2A200E4B00A /* CommandColor.swift */; };
+		42FE50DE24DCE2CF00E4B00A /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FE50DD24DCE2CF00E4B00A /* Int+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +53,9 @@
 		42F4D44224D178100031C650 /* HIDDeviceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HIDDeviceMonitor.swift; sourceTree = "<group>"; };
 		42F4D44424D178200031C650 /* HIDDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HIDDevice.swift; sourceTree = "<group>"; };
 		42FE50D624DC903000E4B00A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		42FE50D824DCDF9F00E4B00A /* Effect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Effect.swift; sourceTree = "<group>"; };
+		42FE50DB24DCE2A200E4B00A /* CommandColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandColor.swift; sourceTree = "<group>"; };
+		42FE50DD24DCE2CF00E4B00A /* Int+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,18 +92,17 @@
 			children = (
 				42F4D43624D0D44E0031C650 /* External */,
 				42F4D42124D0D3330031C650 /* AppDelegate.swift */,
-				42F4D42324D0D3330031C650 /* ViewController.swift */,
-				427A570324D9CB9800760111 /* DeviceViewController.swift */,
+				42FE50E024DCE33200E4B00A /* View */,
+				42FE50E124DCE33C00E4B00A /* View Controller */,
+				42FE50DA24DCE29600E4B00A /* Command */,
+				42FE50DF24DCE30B00E4B00A /* Extensions */,
 				4277A04524D4379D005AB0DA /* USBWatcher.swift */,
 				42F4D43C24D0DCD50031C650 /* AuraUSBController.swift */,
-				42F4D43E24D0DD430031C650 /* Command.swift */,
 				42F4D44024D0DE1D0031C650 /* Aura.swift */,
 				4277A04724D43B1E005AB0DA /* AuraDevice.swift */,
-				426A743F24D2ECD500749F38 /* Array+Extensions.swift */,
-				427A570524D9D26F00760111 /* NSView+Extensions.swift */,
 				427A570124D9985A00760111 /* DeviceManager.swift */,
+				42FE50D824DCDF9F00E4B00A /* Effect.swift */,
 				427A570724D9D89100760111 /* EffectRunner.swift */,
-				42FE50D624DC903000E4B00A /* GradientView.swift */,
 				42F4D42524D0D3340031C650 /* Assets.xcassets */,
 				42F4D42724D0D3340031C650 /* Main.storyboard */,
 				42F4D42A24D0D3340031C650 /* Info.plist */,
@@ -130,6 +135,42 @@
 				42F4D44224D178100031C650 /* HIDDeviceMonitor.swift */,
 			);
 			path = USBDeviceSwift;
+			sourceTree = "<group>";
+		};
+		42FE50DA24DCE29600E4B00A /* Command */ = {
+			isa = PBXGroup;
+			children = (
+				42F4D43E24D0DD430031C650 /* Command.swift */,
+				42FE50DB24DCE2A200E4B00A /* CommandColor.swift */,
+			);
+			path = Command;
+			sourceTree = "<group>";
+		};
+		42FE50DF24DCE30B00E4B00A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				426A743F24D2ECD500749F38 /* Array+Extensions.swift */,
+				42FE50DD24DCE2CF00E4B00A /* Int+Extensions.swift */,
+				427A570524D9D26F00760111 /* NSView+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		42FE50E024DCE33200E4B00A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				42FE50D624DC903000E4B00A /* GradientView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		42FE50E124DCE33C00E4B00A /* View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				42F4D42324D0D3330031C650 /* ViewController.swift */,
+				427A570324D9CB9800760111 /* DeviceViewController.swift */,
+			);
+			path = "View Controller";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,7 +246,9 @@
 				42F4D42424D0D3330031C650 /* ViewController.swift in Sources */,
 				427A570224D9985A00760111 /* DeviceManager.swift in Sources */,
 				42FE50D724DC903000E4B00A /* GradientView.swift in Sources */,
+				42FE50DE24DCE2CF00E4B00A /* Int+Extensions.swift in Sources */,
 				426A744024D2ECD500749F38 /* Array+Extensions.swift in Sources */,
+				42FE50D924DCDF9F00E4B00A /* Effect.swift in Sources */,
 				4277A04624D4379D005AB0DA /* USBWatcher.swift in Sources */,
 				427A570824D9D89100760111 /* EffectRunner.swift in Sources */,
 				42F4D43D24D0DCD50031C650 /* AuraUSBController.swift in Sources */,
@@ -217,6 +260,7 @@
 				42F4D43F24D0DD430031C650 /* Command.swift in Sources */,
 				42F4D44324D178100031C650 /* HIDDeviceMonitor.swift in Sources */,
 				42F4D44124D0DE1D0031C650 /* Aura.swift in Sources */,
+				42FE50DC24DCE2A200E4B00A /* CommandColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
